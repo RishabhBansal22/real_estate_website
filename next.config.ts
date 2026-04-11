@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
   },
   compress: true, // Enable gzip compression
   productionBrowserSourceMaps: false, // Disable source maps in production
-  swcMinify: true, // Use SWC minifier for faster builds
+  //swcMinify: true, // Use SWC minifier for faster builds
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'], // Optimize specific packages
   },
