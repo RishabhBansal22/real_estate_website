@@ -1,3 +1,5 @@
+import { WHATSAPP_PHONE } from "@/lib/contactConfig";
+
 export function formatIndianCurrency(price: number): string {
   if (price >= 10000000) {
     // Convert to Crores
@@ -17,9 +19,11 @@ export function formatIndianCurrency(price: number): string {
   }
 }
 
-export function generateWhatsAppLink(phoneNumber: string, propertyTitle: string): string {
-  // Remove all non-digit characters from phone number
-  const cleanNumber = phoneNumber.replace(/\D/g, '');
+export function generateWhatsAppLink(phoneNumber: string | undefined, propertyTitle: string): string {
+  // Allow per-property number while falling back to configured global contact number.
+  const sourceNumber = phoneNumber?.trim() ? phoneNumber : WHATSAPP_PHONE;
+  const cleanNumber = sourceNumber.replace(/\D/g, '');
+  if (!cleanNumber) return "#";
   const message = `Hi, I am interested in this property: ${propertyTitle}`;
   const encodedMessage = encodeURIComponent(message);
   return `https://wa.me/${cleanNumber}?text=${encodedMessage}`;

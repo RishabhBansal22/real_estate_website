@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { formatIndianCurrency } from "@/lib/utils";
 import { FadeIn } from "@/components/ui/Animations";
+import { buildWhatsAppUrl } from "@/lib/contactConfig";
 
 export default function ComparePage() {
   const { compareIds, toggleCompare, clearCompare } = useCompare();
@@ -188,7 +189,7 @@ export default function ComparePage() {
                         Deep Inspect
                       </Link>
                       <a 
-                         href={`https://wa.me/917073719894?text=${encodeURIComponent(`Hi, I'm analyzing ${p.title} in the Compare tool. Please share pricing.`)}`}
+                         href={buildWhatsAppUrl(`Hi, I'm analyzing ${p.title} in the Compare tool. Please share pricing.`)}
                          target="_blank"
                          rel="noopener noreferrer"
                          className="bg-emerald-500 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-widest text-center flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/10"
