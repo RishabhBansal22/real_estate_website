@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, Home, User as UserIcon, Search, Sparkles, Heart } from "lucide-react";
+import { Menu, X, Home, User as UserIcon, Search, Sparkles, Heart, Phone, MessageSquare } from "lucide-react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -62,6 +62,7 @@ export default function Navbar() {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Properties", href: "/properties" },
+    { name: "EMI Calculator", href: "/emi-calculator" },
     { name: "Wishlist", href: "/wishlist" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
@@ -240,6 +241,28 @@ export default function Navbar() {
               </Link>
             </div>
           )}
+
+          {/* Quick Contact Buttons */}
+          <div className="h-px bg-slate-100 my-4"></div>
+          <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Quick Contact</div>
+          <div className="flex flex-col gap-3">
+            <a 
+              href="tel:+917073719894"
+              className="flex items-center justify-center gap-2 bg-primary-blue text-white py-3 rounded-2xl font-black uppercase tracking-widest text-xs"
+            >
+              <Phone size={16} />
+              Call Us Now
+            </a>
+            <a 
+              href="https://wa.me/917073719894?text=Hi%20Aura%20Estates%2C%20I%20am%20interested."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-emerald-500 text-white py-3 rounded-2xl font-black uppercase tracking-widest text-xs"
+            >
+              <MessageSquare size={16} />
+              WhatsApp
+            </a>
+          </div>
         </div>
       )}
     </nav>

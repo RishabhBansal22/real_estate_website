@@ -15,12 +15,13 @@ import {
 import { useSession, signIn } from "next-auth/react";
 import dynamic from 'next/dynamic';
 import { FadeIn } from "@/components/ui/Animations";
-import { formatIndianCurrency } from "@/lib/utils";
+import Breadcrumb from "@/components/ui/Breadcrumb";
+import { formatIndianCurrency, generateWhatsAppLink } from "@/lib/utils";
 import FloatingContactBar from "@/components/ui/FloatingContactBar";
 
 // Dynamically import client-side-only components to avoid SSR issues
-const LocationMap = dynamic(() => import('@/components/ui/LocationMap'), { ssr: false });
-const PriceTrendChart = dynamic(() => import('@/components/ui/PriceTrendChart'), { ssr: false });
+const LocationMap = dynamic(() => import('@/components/ui/LocationMap'), { ssr: false, loading: () => <div className="w-full h-96 bg-slate-100 rounded-2xl animate-pulse" /> });
+const PriceTrendChart = dynamic(() => import('@/components/ui/PriceTrendChart'), { ssr: false, loading: () => <div className="w-full h-80 bg-slate-100 rounded-2xl animate-pulse" /> });
 
 // Themed Dummy data as fallback 
 const FALLBACK_DATA = {
@@ -33,7 +34,7 @@ const FALLBACK_DATA = {
   agent: {
     name: "Michael R.",
     title: "Senior Asset Advisor",
-    phone: "+91 98765 43210",
+    phone: "+91 70737 19894",
     email: "michael@auraestates.com",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200"
   }
@@ -69,7 +70,8 @@ export default function PropertyDetailsPage() {
              agent: FALLBACK_DATA.agent,
              isVerified: found.isVerified ?? true,
              nearby: found.nearby || [],
-             amenities: found.amenities || ["Parking", "Lift", "Security", "Backup"]
+             amenities: found.amenities || ["Parking", "Lift", "Security", "Backup"],
+             reraNumber: found.reraNumber || 'RERA-PENDING'
            });
         }
         setIsLoading(false);
@@ -137,6 +139,9 @@ export default function PropertyDetailsPage() {
     <div className="min-h-screen bg-white pt-24 pb-24 font-sans">
       <div className="container mx-auto px-4 md:px-6">
         
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb />
+        
         {/* Top Header - Consolidated */}
         <FadeIn>
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-12 gap-8">
@@ -149,6 +154,12 @@ export default function PropertyDetailsPage() {
                   <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-5 py-2.5 rounded-full border border-emerald-500/20 shadow-sm shadow-emerald-500/10">
                     <CheckCircle2 size={16} />
                     <span className="text-[10px] font-black uppercase tracking-widest">Verified Estate</span>
+                  </div>
+                )}
+                {property.reraNumber && (
+                  <div className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-full uppercase tracking-widest shadow-sm shadow-slate-900/20">
+                    <Building size={16} className="text-accent-gold" />
+                    <span className="text-[10px] font-black">RERA: {property.reraNumber}</span>
                   </div>
                 )}
               </div>
@@ -449,7 +460,7 @@ export default function PropertyDetailsPage() {
                       <Phone size={14} className="text-accent-gold" /> Call
                     </a>
                     <a 
-                      href={`https://wa.me/${agentPhone}?text=${encodeURIComponent(`Hi, I'm interested in ${property.title}.`)}`}
+                      href={generateWhatsAppLink(property.agent.phone, property.title)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 py-4 rounded-xl font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 border border-emerald-500/30 transition-all"
@@ -475,7 +486,7 @@ export default function PropertyDetailsPage() {
                            <h4 className="text-xl font-black text-emerald-600 mb-2">Inquiry Logged</h4>
                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed mb-6">Your parameters have been transmitted to the concierge.</p>
                            <a 
-                             href={`https://wa.me/${agentPhone}?text=${encodeURIComponent(`Hi, I just submitted an enquiry for ${property.title}.`)}`}
+                             href={generateWhatsAppLink(property.agent.phone, `I just submitted an enquiry for ${property.title}.`)}
                              target="_blank"
                              rel="noopener noreferrer"
                              className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-500 hover:text-emerald-600 underline underline-offset-4"

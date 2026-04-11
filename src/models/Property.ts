@@ -40,6 +40,15 @@ const PropertySchema = new Schema({
     enum: ['Plot', 'Villa', 'Commercial', 'Apartment'],
     required: [true, 'Property type is required'],
   },
+  status: {
+    type: String,
+    enum: ['Ready to Move', 'Under Construction'],
+    default: 'Ready to Move',
+  },
+  reraNumber: {
+    type: String,
+    default: 'RERA-PENDING',
+  },
   imageUrl: {
     type: String,
     required: [true, 'Image URL is required'],
@@ -84,18 +93,18 @@ PropertySchema.virtual('id').get(function() {
 // Ensure virtual fields are serialized
 PropertySchema.set('toJSON', {
   virtuals: true,
-  transform: (doc, ret) => {
-    delete (ret as any)._id;
-    delete (ret as any).__v;
+  transform: (doc: any, ret: any) => {
+    delete ret._id;
+    delete ret.__v;
     return ret;
   }
 });
 
 PropertySchema.set('toObject', {
   virtuals: true,
-  transform: (doc, ret) => {
-    delete (ret as any)._id;
-    delete (ret as any).__v;
+  transform: (doc: any, ret: any) => {
+    delete ret._id;
+    delete ret.__v;
     return ret;
   }
 });

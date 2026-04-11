@@ -2,9 +2,28 @@
 
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, SlidersHorizontal, ChevronDown, MapPin, X, Star, Sparkles } from "lucide-react";
-import { FadeIn, ScaleIn } from "@/components/ui/Animations";
+import { Search, SlidersHorizontal, ChevronDown, X, Star, Zap, Sparkles } from "lucide-react";
+import { FadeIn } from "@/components/ui/Animations";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import PropertyCard from "@/components/ui/PropertyCard";
+
+interface PropertyData {
+  id: string;
+  title: string;
+  price: number;
+  location: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+  imageUrl: string;
+  type: string;
+  status?: string;
+  createdAt?: string;
+  city?: string;
+  locality?: string;
+  highlights?: string[];
+  isVerified?: boolean;
+}
 
 export default function PropertiesPage() {
   return (
@@ -16,7 +35,7 @@ export default function PropertiesPage() {
 
 function PropertiesContent() {
   const searchParams = useSearchParams();
-  const [properties, setProperties] = useState<any[]>([]);
+  const [properties, setProperties] = useState<PropertyData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -29,11 +48,13 @@ function PropertiesContent() {
     const capitalized = rawType.charAt(0).toUpperCase() + rawType.slice(1);
     return [capitalized];
   });
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState({ 
     min: "", 
     max: searchParams.get('budget') || "" 
   });
   const [minBeds, setMinBeds] = useState(searchParams.get('beds') || "Any");
+  const [selectedHighlights, setSelectedHighlights] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("Recommended");
   const [currentPage, setCurrentPage] = useState(1);
   
@@ -67,12 +88,28 @@ function PropertiesContent() {
     setCurrentPage(1); // Reset page on filter
   };
 
+  const handleStatusSelect = (status: string) => {
+    setSelectedStatus(prev => 
+      prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
+    );
+    setCurrentPage(1); // Reset page on filter
+  };
+
+  const handleHighlightSelect = (highlight: string) => {
+    setSelectedHighlights(prev => 
+      prev.includes(highlight) ? prev.filter(h => h !== highlight) : [...prev, highlight]
+    );
+    setCurrentPage(1); // Reset page on filter
+  };
+
   const clearFilters = () => {
     setCity("");
     setKeyword("");
     setSelectedTypes([]);
+    setSelectedStatus([]);
     setPriceRange({ min: "", max: "" });
     setMinBeds("Any");
+    setSelectedHighlights([]);
     setCurrentPage(1);
   };
 
@@ -101,6 +138,18 @@ function PropertiesContent() {
       result = result.filter(p => selectedTypes.includes(p.type));
     }
 
+    // 3.5. Property Status
+    if (selectedStatus.length > 0) {
+      result = result.filter(p => p.status ? selectedStatus.includes(p.status) : false);
+    }
+
+    // 3.6. Highlights (Hot Deal, New)
+    if (selectedHighlights.length > 0) {
+      result = result.filter(p => 
+        p.highlights ? selectedHighlights.some(h => p.highlights.includes(h)) : false
+      );
+    }
+
     // 4. Price
     const minP = parseInt(priceRange.min);
     const maxP = parseInt(priceRange.max);
@@ -122,7 +171,7 @@ function PropertiesContent() {
     });
 
     return result;
-  }, [properties, city, keyword, selectedTypes, priceRange, minBeds, sortBy]);
+  }, [properties, city, keyword, selectedTypes, selectedStatus, selectedHighlights, priceRange, minBeds, sortBy]);
 
   // Pagination Math
   const totalPages = Math.ceil(filteredAndSortedProperties.length / ITEMS_PER_PAGE);
@@ -134,11 +183,14 @@ function PropertiesContent() {
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(1);
     }
-  }, [totalPages, currentPage]);
+  }, [totalPages]); // Remove currentPage from dependencies to avoid cascading renders
 
   return (
     <div className="min-h-screen bg-white pt-24 pb-24 font-sans">
       <div className="container mx-auto px-4 md:px-6">
+        
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb />
         
         {/* Page Header */}
         <FadeIn>
@@ -224,6 +276,53 @@ function PropertiesContent() {
                     </div>
                   </div>
 
+                  {/* Property Status */}
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Property Status</label>
+                    <div className="grid grid-cols-1 gap-3">
+                      {['Ready to Move', 'Under Construction'].map((status, i) => (
+                        <button 
+                          key={i} 
+                          onClick={() => handleStatusSelect(status)}
+                          className={`flex items-center gap-3 px-5 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                            selectedStatus.includes(status) 
+                              ? 'bg-accent-gold text-white border-accent-gold shadow-lg shadow-accent-gold/20' 
+                              : 'bg-white text-slate-400 border-slate-100 hover:border-accent-gold hover:text-accent-gold'
+                          }`}
+                        >
+                          <div className={`w-2.5 h-2.5 rounded-full ${selectedStatus.includes(status) ? 'bg-primary-blue scale-125' : 'bg-slate-200'}`}></div>
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Highlights Filter */}
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Special Offers</label>
+                    <div className="grid grid-cols-1 gap-3">
+                      {['Hot Deal', 'New'].map((highlight, i) => {
+                        const icon = highlight === 'Hot Deal' ? <Zap size={14} /> : <Sparkles size={14} />;
+                        const bgColor = highlight === 'Hot Deal' ? 'bg-rose-50 border-rose-200' : 'bg-emerald-50 border-emerald-200';
+                        const selectedColor = highlight === 'Hot Deal' ? 'bg-rose-500 border-rose-500' : 'bg-emerald-500 border-emerald-500';
+                        return (
+                          <button 
+                            key={i} 
+                            onClick={() => handleHighlightSelect(highlight)}
+                            className={`flex items-center gap-3 px-5 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                              selectedHighlights.includes(highlight) 
+                                ? `${selectedColor} text-white shadow-lg` 
+                                : `${bgColor} text-slate-600 hover:text-slate-700`
+                            }`}
+                          >
+                            {icon}
+                            {highlight}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   {/* Budget Dropdowns */}
                   <div>
                     <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Budget Range</label>
@@ -234,11 +333,11 @@ function PropertiesContent() {
                         className="w-full px-5 py-4 bg-white text-primary-blue font-black text-[10px] rounded-2xl outline-none focus:ring-4 focus:ring-accent-gold/5 border border-slate-100 appearance-none cursor-pointer uppercase tracking-widest"
                       >
                          <option value="">MIN BUDGET</option>
-                         <option value="1000000">10 LACS</option>
-                         <option value="2500000">25 LACS</option>
-                         <option value="5000000">50 LACS</option>
-                         <option value="10000000">1 CRORE</option>
-                         <option value="50000000">5 CRORE</option>
+                         <option value="1000000">₹10 LACS</option>
+                         <option value="2500000">₹25 LACS</option>
+                         <option value="5000000">₹50 LACS</option>
+                         <option value="10000000">₹1 CRORE</option>
+                         <option value="50000000">₹5 CRORE</option>
                       </select>
                       <select 
                         value={priceRange.max}
@@ -246,10 +345,10 @@ function PropertiesContent() {
                         className="w-full px-5 py-4 bg-white text-primary-blue font-black text-[10px] rounded-2xl outline-none focus:ring-4 focus:ring-accent-gold/5 border border-slate-100 appearance-none cursor-pointer uppercase tracking-widest"
                       >
                          <option value="">MAX BUDGET</option>
-                         <option value="5000000">50 LACS</option>
-                         <option value="10000000">1 CRORE</option>
-                         <option value="50000000">5 CRORE</option>
-                         <option value="100000000">10 CRORE+</option>
+                         <option value="5000000">₹50 LACS</option>
+                         <option value="10000000">₹1 CRORE</option>
+                         <option value="50000000">₹5 CRORE</option>
+                         <option value="100000000">₹10 CRORE+</option>
                       </select>
                     </div>
                   </div>
@@ -325,7 +424,7 @@ function PropertiesContent() {
                      <Search size={40} />
                    </div>
                    <h3 className="text-3xl font-black text-primary-blue mb-4 tracking-tight">No Acquisitions Found</h3>
-                   <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] text-center max-w-sm mb-10 leading-relaxed">We could not locate any properties matching your distinguished criteria. Consider expanding your parameters.</p>
+                   <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] text-center max-w-sm mb-10 leading-relaxed">We couldn&apos;t locate any properties matching your distinguished criteria. Consider expanding your parameters.</p>
                    <button onClick={clearFilters} className="bg-primary-blue text-white px-10 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] transition-all shadow-2xl shadow-primary-blue/20 hover:bg-black">
                      Reset Selection
                    </button>

@@ -1,11 +1,42 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Building, Home, Sprout, Map, Star, TrendingUp, ShieldCheck, Trophy, Sparkles } from "lucide-react";
+import { ArrowRight, Building, Home, Sprout, TrendingUp, ShieldCheck, Trophy, Sparkles } from "lucide-react";
 import PropertyCard from "@/components/ui/PropertyCard";
 import AdvancedSearch from "@/components/ui/AdvancedSearch";
+import TopCitiesSection from "@/components/ui/TopCitiesSection";
+import ContactCTA from "@/components/ui/ContactCTA";
 import connectToDatabase from "@/lib/mongodb";
 import Property from "@/models/Property";
 import { FadeIn, ScaleIn } from "@/components/ui/Animations";
+
+interface PropertyData {
+  id: string;
+  title: string;
+  city: string;
+  locality: string;
+  location: string;
+  price: number;
+  beds: number;
+  baths: number;
+  sqft: number;
+  type: string;
+  imageUrl: string;
+  highlights: string[];
+  amenities: string[];
+  nearby: Array<{
+    name: string;
+    category: string;
+    distance: string;
+  }>;
+  builder: {
+    name: string;
+    experience: string;
+  };
+  isVerified: boolean;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default async function HomePage() {
   await connectToDatabase();
@@ -147,7 +178,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {featuredProperties.map((property: any, idx: number) => (
+            {featuredProperties.map((property: PropertyData, idx: number) => (
               <FadeIn key={property.id} delay={0.1 * idx}>
                 <PropertyCard property={property} />
               </FadeIn>
@@ -185,6 +216,18 @@ export default async function HomePage() {
               </FadeIn>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Top Cities Section */}
+      <TopCitiesSection />
+
+      {/* Contact CTA Section */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="container mx-auto px-4 md:px-6">
+          <FadeIn>
+            <ContactCTA />
+          </FadeIn>
         </div>
       </section>
 
