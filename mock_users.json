@@ -1,0 +1,19 @@
+[
+  {
+    "_id": "1774766965565",
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "$2b$12$o9tOmkZCXa1qyDcG94uH1OMj3tZC3m4MMPfUn5q1vzyEDpJdcj0gq",
+    "role": "admin",
+    "savedProperties": [
+      "1"
+    ]
+  },
+  {
+    "_id": "1774767114176",
+    "name": "ABCD",
+    "email": "abcd@gmail.com",
+    "password": "$2b$12$fyjTuTdxuMYyfYWUQdrkjeqxndAuZv9RrO4mY2L7AoZuqGgEsQIqG",
+    "role": "user"
+  }
+]
