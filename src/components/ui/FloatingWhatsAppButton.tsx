@@ -2,18 +2,18 @@
 
 import { MessageCircle } from "lucide-react";
 import { useState } from "react";
+import { buildWhatsAppUrl } from "@/lib/contactConfig";
 
 export default function FloatingWhatsAppButton() {
   const [isOpen, setIsOpen] = useState(false);
-  
-  const defaultPhone = "917073719894"; // Admin WhatsApp number
+
   const defaultMessage = "Hi, I'm interested in your property!";
 
   return (
     <>
       {/* Floating Button */}
       <a
-        href={`https://wa.me/${defaultPhone}?text=${encodeURIComponent(defaultMessage)}`}
+        href={buildWhatsAppUrl(defaultMessage)}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-8 right-8 z-40 bg-emerald-500 hover:bg-emerald-600 text-white p-4 rounded-full shadow-2xl shadow-emerald-500/50 hover:scale-110 transition-all active:scale-95 cursor-pointer group"

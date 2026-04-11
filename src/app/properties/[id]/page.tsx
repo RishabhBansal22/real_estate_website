@@ -18,6 +18,7 @@ import { FadeIn } from "@/components/ui/Animations";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { formatIndianCurrency, generateWhatsAppLink } from "@/lib/utils";
 import FloatingContactBar from "@/components/ui/FloatingContactBar";
+import { CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from "@/lib/contactConfig";
 
 // Dynamically import client-side-only components to avoid SSR issues
 const LocationMap = dynamic(() => import('@/components/ui/LocationMap'), { ssr: false, loading: () => <div className="w-full h-96 bg-slate-100 rounded-2xl animate-pulse" /> });
@@ -34,7 +35,7 @@ const FALLBACK_DATA = {
   agent: {
     name: "Michael R.",
     title: "Senior Asset Advisor",
-    phone: "+91 70737 19894",
+    phone: CONTACT_PHONE_DISPLAY || CONTACT_PHONE_TEL,
     email: "michael@auraestates.com",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200"
   }
@@ -133,7 +134,7 @@ export default function PropertyDetailsPage() {
 
   const isLand = property.type.toLowerCase().includes('plot') || property.type.toLowerCase().includes('land');
   // Pre-compute cleaned phone — avoids regex inside nested template literals (Turbopack parse error)
-  const agentPhone = property.agent.phone.replace(/\s+/g, '');
+  const agentPhone = (property.agent?.phone || "").replace(/\s+/g, '');
 
   return (
     <div className="min-h-screen bg-white pt-24 pb-24 font-sans">
@@ -454,7 +455,7 @@ export default function PropertyDetailsPage() {
 
                   <div className="grid grid-cols-2 gap-3 z-10 relative">
                     <a 
-                      href={`tel:${property.agent.phone}`}
+                      href={agentPhone ? `tel:${agentPhone}` : "#"}
                       className="bg-white/10 hover:bg-white/20 text-white py-4 rounded-xl font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 border border-white/10 transition-all"
                     >
                       <Phone size={14} className="text-accent-gold" /> Call

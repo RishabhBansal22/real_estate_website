@@ -2,6 +2,7 @@
 
 import { Phone, MessageSquare, Zap, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { CONTACT_PHONE_TEL, buildWhatsAppUrl } from "@/lib/contactConfig";
 
 export default function ContactCTA() {
   return (
@@ -22,14 +23,14 @@ export default function ContactCTA() {
         {/* Middle: Quick Contact Buttons */}
         <div className="md:col-span-1 flex gap-4 justify-center">
           <a 
-            href="tel:+917073719894"
+            href={CONTACT_PHONE_TEL ? `tel:${CONTACT_PHONE_TEL}` : "#"}
             className="flex-1 flex items-center justify-center gap-2 bg-white text-primary-blue px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-accent-gold hover:text-white transition-all shadow-lg hover:-translate-y-1"
           >
             <Phone size={18} />
             Call Now
           </a>
           <a 
-            href="https://wa.me/917073719894?text=Hi%20Aura%20Estates%2C%20I%20need%20property%20guidance."
+            href={buildWhatsAppUrl("Hi Aura Estates, I need property guidance.")}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 text-white px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-emerald-600 transition-all shadow-lg hover:-translate-y-1"

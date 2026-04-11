@@ -9,6 +9,7 @@ import { useSession, signIn } from "next-auth/react";
 
 import { formatIndianCurrency, generateWhatsAppLink } from "@/lib/utils";
 import { useCompare } from "@/hooks/useCompare";
+import { WHATSAPP_PHONE } from "@/lib/contactConfig";
 
 interface PropertyProps {
   id: string;
@@ -139,7 +140,7 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
 
         {/* WhatsApp Quick Link */}
         <a 
-          href={generateWhatsAppLink("917073719894", property.title)}
+          href={generateWhatsAppLink(WHATSAPP_PHONE, property.title)}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
