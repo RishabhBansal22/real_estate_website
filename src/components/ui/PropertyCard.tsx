@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Bed, Bath, Square, Heart, Sprout, MessageSquare } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Heart, Sprout, MessageSquare, Calculator, Zap, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { useSession, signIn } from "next-auth/react";
 
-import { formatIndianCurrency } from "@/lib/utils";
+import { formatIndianCurrency, generateWhatsAppLink } from "@/lib/utils";
 import { useCompare } from "@/hooks/useCompare";
 
 interface PropertyProps {
@@ -20,6 +20,8 @@ interface PropertyProps {
   sqft: number;
   imageUrl: string;
   type: string;
+  status?: string;
+  reraNumber?: string;
   createdAt?: string;
   city?: string;
   locality?: string;
@@ -36,8 +38,8 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
     if (session?.user) {
       fetch('/api/users/wishlist')
         .then(res => res.json())
-        .then((savedItems: any[]) => {
-          setIsSaved(savedItems.some((i: any) => i.id === property.id));
+        .then((savedItems: { id: string }[]) => {
+          setIsSaved(savedItems.some((i: { id: string }) => i.id === property.id));
         })
         .catch(() => {});
     }
@@ -66,12 +68,16 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
   };
 
   const isLand = property.type.toLowerCase().includes('land') || property.type.toLowerCase().includes('plot');
+  const tagBadges = property.highlights?.filter((h) => h === 'Hot Deal' || h === 'New') || [];
+  const isHotDeal = tagBadges.includes('Hot Deal');
+  const isNew = tagBadges.includes('New');
+  const cityLabel = property.city || property.location?.split(',').pop()?.trim() || property.location;
   const summaryString = !isLand 
-    ? `${property.beds}BHK ${property.type} in ${property.city} | ${formatIndianCurrency(property.price)} | ${property.sqft} sqft`
-    : `${property.type} in ${property.city} | ${formatIndianCurrency(property.price)} | ${property.sqft} sq. yds`;
+    ? `${property.beds}BHK ${property.type} in ${cityLabel} | ${formatIndianCurrency(property.price)} | ${property.sqft} sqft`
+    : `${property.type} in ${cityLabel} | ${formatIndianCurrency(property.price)} | ${property.sqft} sq. yds`;
 
   return (
-    <div className="group bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-primary-blue/5 transition-all duration-500 transform hover:-translate-y-3">
+    <div className="group bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-2xl shadow-slate-200/30 hover:shadow-2xl hover:shadow-primary-blue/10 transition-all duration-500 transform hover:-translate-y-2">
       {/* Image Container */}
       <div className="relative h-72 w-full overflow-hidden">
         <Image
@@ -83,19 +89,39 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
         <div className="absolute inset-0 bg-gradient-to-t from-primary-blue/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
         {/* Badges */}
-        <div className="absolute top-5 left-5 flex flex-col gap-2">
-           <div className="flex gap-2">
-             <span className="bg-accent-gold text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg">
-               Exclusive
-             </span>
-             <span className="bg-white/95 backdrop-blur-sm text-primary-blue text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg">
-               {property.type}
-             </span>
+        <div className="absolute top-5 left-5 flex flex-wrap items-start gap-2">
+           <div className="bg-accent-gold text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg">
+             Exclusive
            </div>
+           <div className="bg-white/95 backdrop-blur-sm text-primary-blue text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg">
+             {property.type}
+           </div>
+           {isHotDeal && (
+             <div className="bg-rose-500 text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-2">
+               <Zap size={12} /> Hot Deal
+             </div>
+           )}
+           {isNew && (
+             <div className="bg-emerald-500 text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-2">
+               <Sparkles size={12} /> New
+             </div>
+           )}
            {property.isVerified && (
              <div className="flex items-center gap-2 bg-emerald-500 text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg self-start border border-emerald-400">
                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
                Verified
+             </div>
+           )}
+           {property.status && (
+             <div className={`flex items-center gap-2 text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg self-start border ${
+               property.status === 'Ready to Move' 
+                 ? 'bg-emerald-500 text-white border-emerald-400' 
+                 : 'bg-amber-500 text-white border-amber-400'
+             }`}>
+               <span className={`w-1.5 h-1.5 rounded-full ${
+                 property.status === 'Ready to Move' ? 'bg-white animate-pulse' : 'bg-white'
+               }`}></span>
+               {property.status}
              </div>
            )}
         </div>
@@ -113,7 +139,7 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
 
         {/* WhatsApp Quick Link */}
         <a 
-          href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi, I'm interested in ${property.title}.`)}`}
+          href={generateWhatsAppLink("919876543210", property.title)}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
@@ -135,6 +161,11 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
           <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
              {summaryString}
           </div>
+          {property.reraNumber && (
+            <div className="mt-3 text-[10px] font-black uppercase tracking-[0.25em] text-slate-500">
+              RERA: <span className="text-primary-blue">{property.reraNumber}</span>
+            </div>
+          )}
         </div>
         
         <Link href={`/properties/${property.id}`}>
@@ -194,7 +225,13 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
 
         {/* Comparison Toggle */}
         <div className="mt-6 pt-6 border-t border-slate-50 flex justify-between items-center">
-             <div className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Aura Portfolio</div>
+             <Link 
+               href={`/emi-calculator?price=${property.price}&downPayment=${Math.round(property.price * 0.2)}`}
+               className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-accent-gold hover:text-accent-gold-hover transition-colors"
+             >
+               <Calculator size={12} />
+               EMI Calculator
+             </Link>
              <button 
                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(property.id); }}
                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${

@@ -24,6 +24,10 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Property',
   }],
+  contactHistory: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Contact',
+  }],
 }, {
   timestamps: true,
 });

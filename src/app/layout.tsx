@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Providers from "@/components/providers";
 import ComparisonBar from "@/components/ui/ComparisonBar";
+import FloatingWhatsAppButton from "@/components/ui/FloatingWhatsAppButton";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,6 +37,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
           <ComparisonBar />
+          <FloatingWhatsAppButton />
         </Providers>
       </body>
     </html>

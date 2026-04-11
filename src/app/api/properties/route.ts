@@ -14,9 +14,11 @@ const SEED_PROPERTIES = [
     beds: 3, 
     baths: 3, 
     sqft: 1800, 
-    imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=800", 
+    imageUrl: "https://images.unsplash.com/photo-1596893268413-db5b44aa6b75?auto=format&fit=crop&q=80&w=800", 
     type: "Apartment", 
-    highlights: ["Near Metro", "Semi-Furnished", "Ready to Move"],
+    status: "Ready to Move",
+    reraNumber: "RERA/UP/2026/12345",
+    highlights: ["Near Metro", "Semi-Furnished", "Hot Deal"],
     amenities: ["Reserved Parking", "High Speed Lift", "24/7 CCTV Security", "Club House", "Power Backup"],
     nearby: [
       { name: "Indirapuram Public School", category: "School", distance: "5 min" },
@@ -35,9 +37,11 @@ const SEED_PROPERTIES = [
     beds: 4, 
     baths: 5, 
     sqft: 3500, 
-    imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800", 
+    imageUrl: "https://images.unsplash.com/photo-1544986581-efac024faf62?auto=format&fit=crop&q=80&w=800", 
     type: "Apartment", 
-    highlights: ["Sea View", "Ultra-Luxury", "Vastu Compliant"],
+    status: "Under Construction",
+    reraNumber: "RERA/MH/2026/56789",
+    highlights: ["Sea View", "Ultra-Luxury", "New"],
     amenities: ["Private Lift", "Infinity Pool", "3 Car Parking", "Concierge Service", "Smart Home Automation"],
     nearby: [
       { name: "Cathedral School", category: "School", distance: "15 min" },
@@ -56,9 +60,11 @@ const SEED_PROPERTIES = [
     beds: 0, 
     baths: 0, 
     sqft: 4500, 
-    imageUrl: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=800", 
+    imageUrl: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=800", 
     type: "Plot", 
-    highlights: ["Park Facing", "Corner Plot", "Freehold"],
+    status: "Ready to Move",
+    reraNumber: "RERA/DL/2026/90123",
+    highlights: ["Park Facing", "Corner Plot", "Hot Deal"],
     amenities: ["Gated Community", "Water Connection", "Electricity Point", "Wide Internal Roads"],
     nearby: [
       { name: "Modern School", category: "School", distance: "10 min" },
@@ -77,9 +83,11 @@ const SEED_PROPERTIES = [
     beds: 5, 
     baths: 6, 
     sqft: 6000, 
-    imageUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800", 
+    imageUrl: "https://images.unsplash.com/photo-1560448074-8f19ac5ea7ab?auto=format&fit=crop&q=80&w=800", 
     type: "Villa", 
-    highlights: ["Private Pool", "Smart Home", "Gated Community"],
+    status: "Under Construction",
+    reraNumber: "RERA/HR/2026/33445",
+    highlights: ["Private Pool", "Smart Home", "New"],
     amenities: ["Private Lift", "4 Car Parking", "Advanced Security System", "Home Cinema", "Landscaped Garden"],
     nearby: [
       { name: "Heritage SchoolX", category: "School", distance: "5 min" },
@@ -98,10 +106,10 @@ export async function GET() {
     // Auto-seed logic if the remote DB is completely empty!
     let count = await Property.countDocuments();
     
-    // Migration check: If isVerified is missing, force re-seed
+    // Migration check: If isVerified or status is missing, force re-seed
     if (count > 0) {
        const sampleProp = await Property.findOne();
-       if (sampleProp.isVerified === undefined) {
+       if (sampleProp.isVerified === undefined || sampleProp.status === undefined || sampleProp.reraNumber === undefined) {
           console.log("Deep Indian data missing. Migrating data...");
           await Property.deleteMany({});
           count = 0;

@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from 'next/link';
 import { useState, useEffect, Suspense } from "react";
-import { User, Heart, Settings, Building, LogOut, Search, MapPin, Calendar, CheckCircle2, ShieldAlert, Plus, Edit2, Trash2, Users, Crown, Sparkles } from "lucide-react";
+import { User, Heart, Settings, Building, LogOut, Search, MapPin, Calendar, CheckCircle2, ShieldAlert, Plus, Edit2, Trash2, Users, Crown, Sparkles, MessageSquare, Clock, Download, TrendingUp } from "lucide-react";
 import PropertyCard from "@/components/ui/PropertyCard";
 import { FadeIn, ScaleIn } from "@/components/ui/Animations";
 import { formatIndianCurrency } from "@/lib/utils";
@@ -30,10 +30,13 @@ function DashboardContent() {
   // User Data States
   const [savedProperties, setSavedProperties] = useState<any[]>([]);
   const [isLoadingSaved, setIsLoadingSaved] = useState(false);
+  const [contactHistory, setContactHistory] = useState<any[]>([]);
+  const [isLoadingContacts, setIsLoadingContacts] = useState(false);
 
   // Admin Data States
   const [properties, setProperties] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [leads, setLeads] = useState<any[]>([]);
   const [isLoadingAdmin, setIsLoadingAdmin] = useState(false);
 
   // Modal State
@@ -53,8 +56,14 @@ function DashboardContent() {
     if (isAdmin && currentTab === "manage-users") {
       fetchAdminUsers();
     }
+    if (isAdmin && currentTab === "manage-leads") {
+      fetchLeads();
+    }
     if (currentTab === "saved") {
       fetchSavedProperties();
+    }
+    if (currentTab === "contacts") {
+      fetchContactHistory();
     }
   }, [isAdmin, currentTab]);
 
@@ -63,6 +72,17 @@ function DashboardContent() {
     const res = await fetch('/api/users/wishlist');
     if (res.ok) setSavedProperties(await res.json());
     setIsLoadingSaved(false);
+  };
+
+  const fetchContactHistory = async () => {
+    setIsLoadingContacts(true);
+    try {
+      const res = await fetch('/api/users/contacts');
+      if (res.ok) setContactHistory(await res.json());
+    } catch (error) {
+      console.error('Failed to fetch contact history:', error);
+    }
+    setIsLoadingContacts(false);
   };
 
   const fetchAdminProperties = async () => {
@@ -77,6 +97,77 @@ function DashboardContent() {
     const res = await fetch('/api/users');
     if (res.ok) setUsers(await res.json());
     setIsLoadingAdmin(false);
+  };
+
+  const fetchLeads = async () => {
+    setIsLoadingAdmin(true);
+    try {
+      const res = await fetch('/api/contacts');
+      if (res.ok) setLeads(await res.json());
+    } catch (error) {
+      console.error('Failed to fetch leads:', error);
+    }
+    setIsLoadingAdmin(false);
+  };
+
+  const handleUpdateLeadStatus = async (contactId: string, newStatus: string) => {
+    try {
+      const res = await fetch('/api/contacts', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactId, status: newStatus })
+      });
+      if (res.ok) {
+        fetchLeads();
+      }
+    } catch (error) {
+      console.error('Failed to update lead status:', error);
+    }
+  };
+
+  const exportLeadsToExcel = async () => {
+    try {
+      const XLSX = await import('xlsx');
+      
+      // Prepare data for Excel
+      const excelData = leads.map(lead => ({
+        'Date': new Date(lead.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+        'Time': new Date(lead.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        'First Name': lead.firstName,
+        'Last Name': lead.lastName,
+        'Email': lead.email,
+        'Phone': lead.phone,
+        'Subject': lead.subject,
+        'Message': lead.message,
+        'Status': lead.status,
+        'User': lead.userId?.name || 'Unknown',
+        'Property': lead.propertyId?.title || 'None'
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads');
+      
+      // Set column widths
+      const colWidths = [
+        { wch: 12 },
+        { wch: 10 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 25 },
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 30 },
+        { wch: 12 },
+        { wch: 20 },
+        { wch: 25 }
+      ];
+      worksheet['!cols'] = colWidths;
+
+      XLSX.writeFile(workbook, `leads_${new Date().toISOString().split('T')[0]}.xlsx`);
+    } catch (error) {
+      console.error('Failed to export leads:', error);
+    }
   };
 
   const handleDeleteProperty = async (id: string) => {
@@ -173,6 +264,9 @@ function DashboardContent() {
                      <Link href="/wishlist" className="flex items-center gap-4 px-5 py-4 text-xs font-black uppercase tracking-widest rounded-2xl transition-all text-slate-400 hover:text-white hover:bg-white/5">
                        <Heart size={18} className="text-accent-gold" /> Full Wishlist
                      </Link>
+                     <Link href="?tab=contacts" className={`flex items-center gap-4 px-5 py-4 text-xs font-black uppercase tracking-widest rounded-2xl transition-all ${currentTab === 'contacts' ? 'bg-accent-gold text-white shadow-lg shadow-accent-gold/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+                       <MessageSquare size={18} /> Contact History
+                     </Link>
                      <Link href="?tab=tours" className={`flex items-center gap-4 px-5 py-4 text-xs font-black uppercase tracking-widest rounded-2xl transition-all ${currentTab === 'tours' ? 'bg-accent-gold text-white shadow-lg shadow-accent-gold/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
                        <Calendar size={18} /> Visitations
                      </Link>
@@ -187,6 +281,9 @@ function DashboardContent() {
                         <ShieldAlert size={14} /> Global Control
                       </div>
                       <nav className="space-y-3">
+                         <Link href="?tab=manage-leads" className={`flex items-center gap-4 px-5 py-4 text-xs font-black uppercase tracking-widest rounded-2xl transition-all ${currentTab === 'manage-leads' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+                           <TrendingUp size={18} /> Leads
+                         </Link>
                          <Link href="?tab=manage-properties" className={`flex items-center gap-4 px-5 py-4 text-xs font-black uppercase tracking-widest rounded-2xl transition-all ${currentTab === 'manage-properties' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
                            <Building size={18} /> Assets
                          </Link>
@@ -249,6 +346,80 @@ function DashboardContent() {
                           </p>
                           <Link href="/properties" className="bg-accent-gold text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-accent-gold/20 hover:scale-105 transition-all">
                             Explore Masterpieces
+                          </Link>
+                      </div>
+                    </FadeIn>
+                  )}
+               </div>
+             )}
+
+             {currentTab === 'contacts' && (
+               <div className="space-y-8 animate-in fade-in duration-500">
+                  <div className="flex justify-between items-center bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-3xl">
+                    <h3 className="text-2xl font-black text-white tracking-tighter flex items-center gap-3">
+                      <MessageSquare size={24} className="text-accent-gold" /> Inquiry Chronicle
+                    </h3>
+                    <span className="bg-accent-gold text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-accent-gold/20">{contactHistory.length} Transmissions</span>
+                  </div>
+
+                  {isLoadingContacts ? (
+                     <div className="p-20 text-center text-accent-gold font-black text-xs uppercase tracking-widest animate-pulse">Retrieving Inquiry Data...</div>
+                  ) : contactHistory.length > 0 ? (
+                    <div className="space-y-4">
+                       {contactHistory.map((contact, idx) => (
+                         <FadeIn key={contact.id} delay={0.05 * idx}>
+                           <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all hover:border-accent-gold/30">
+                             <div className="flex justify-between items-start mb-4">
+                               <div className="flex-1">
+                                 <h4 className="text-lg font-black text-white tracking-tight mb-1">{contact.firstName} {contact.lastName}</h4>
+                                 <div className="flex items-center gap-2 text-slate-400 text-sm font-bold mb-2">
+                                   <Clock size={14} className="text-accent-gold/70" />
+                                   {new Date(contact.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                 </div>
+                               </div>
+                               <span className={`px-4 py-1.5 text-[10px] font-black rounded-full uppercase tracking-[0.2em] border flex items-center gap-2 ${
+                                 contact.status === 'resolved' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                                 contact.status === 'contacted' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                                 'bg-slate-500/10 text-slate-400 border-slate-500/20'
+                               }`}>
+                                 {contact.status === 'resolved' && <CheckCircle2 size={12} />}
+                                 {contact.status}
+                               </span>
+                             </div>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                               <div>
+                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Contact Email</p>
+                                 <p className="text-white font-medium truncate">{contact.email}</p>
+                               </div>
+                               <div>
+                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Contact Phone</p>
+                                 <p className="text-white font-medium">{contact.phone}</p>
+                               </div>
+                             </div>
+                             <div className="mb-4">
+                               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Subject</p>
+                               <p className="text-accent-gold font-bold">{contact.subject}</p>
+                             </div>
+                             <div>
+                               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Message</p>
+                               <p className="text-slate-300 text-sm leading-relaxed break-words">{contact.message}</p>
+                             </div>
+                           </div>
+                         </FadeIn>
+                       ))}
+                    </div>
+                  ) : (
+                    <FadeIn>
+                      <div className="bg-white/5 backdrop-blur-2xl p-12 rounded-[3.5rem] border border-white/10 min-h-[400px] flex flex-col items-center justify-center text-center">
+                          <div className="w-24 h-24 bg-primary-blue/50 rounded-full flex flex-col items-center justify-center text-slate-500 mb-8 border border-white/10">
+                            <MessageSquare size={40} />
+                          </div>
+                          <h3 className="text-3xl font-black text-white mb-4 tracking-tight">No Inquiries Yet</h3>
+                          <p className="text-slate-400 font-medium max-w-sm mb-10 text-lg leading-relaxed">
+                            Your inquiry transmissions will appear here for future reference.
+                          </p>
+                          <Link href="/contact" className="bg-accent-gold text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-accent-gold/20 hover:scale-105 transition-all">
+                            Send Inquiry
                           </Link>
                       </div>
                     </FadeIn>
@@ -367,6 +538,94 @@ function DashboardContent() {
                         </tbody>
                       </table>
                     </div>
+                 </div>
+               </FadeIn>
+             )}
+
+             {/* ADMIN TAB: Manage Leads */}
+             {isAdmin && currentTab === 'manage-leads' && (
+               <FadeIn>
+                 <div className="bg-white/5 backdrop-blur-2xl rounded-[3.5rem] border border-white/10 overflow-hidden">
+                    <div className="p-10 border-b border-white/10 bg-primary-blue/20 flex justify-between items-center">
+                      <h3 className="text-2xl font-black text-white tracking-tighter">Lead Management</h3>
+                      <button 
+                        onClick={exportLeadsToExcel}
+                        disabled={leads.length === 0}
+                        className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Download size={16} /> Export to Excel
+                      </button>
+                    </div>
+                    
+                    {isLoadingAdmin ? (
+                      <div className="p-20 text-center text-accent-gold font-black text-xs uppercase tracking-widest animate-pulse">Loading Lead Data...</div>
+                    ) : leads.length > 0 ? (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                          <thead className="bg-primary-blue/30 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] sticky top-0">
+                            <tr>
+                              <th className="p-4 pl-6">Date</th>
+                              <th className="p-4">Name</th>
+                              <th className="p-4">Email</th>
+                              <th className="p-4">Phone</th>
+                              <th className="p-4">Subject</th>
+                              <th className="p-4">User</th>
+                              <th className="p-4">Status</th>
+                              <th className="p-4 text-right pr-6">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-white/10 text-white font-medium text-xs">
+                            {leads.map((lead) => (
+                              <tr key={lead._id || lead.id} className="hover:bg-primary-blue/30 transition-colors group">
+                                <td className="p-4 pl-6 whitespace-nowrap">
+                                  <span className="text-slate-400">{new Date(lead.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                </td>
+                                <td className="p-4 font-black uppercase tracking-wide">
+                                  {lead.firstName} {lead.lastName}
+                                </td>
+                                <td className="p-4 text-slate-300 truncate max-w-[200px]">{lead.email}</td>
+                                <td className="p-4 text-slate-300">{lead.phone}</td>
+                                <td className="p-4">
+                                  <span className="text-accent-gold font-bold">{lead.subject}</span>
+                                </td>
+                                <td className="p-4 text-slate-300  truncate max-w-[150px]">{lead.userId?.name || 'N/A'}</td>
+                                <td className="p-4">
+                                  <select 
+                                    value={lead.status}
+                                    onChange={(e) => handleUpdateLeadStatus(lead._id || lead.id, e.target.value)}
+                                    className={`px-3 py-1.5 text-[9px] font-black rounded-full uppercase tracking-[0.2em] border bg-primary-blue cursor-pointer ${
+                                      lead.status === 'resolved' ? 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10' :
+                                      lead.status === 'contacted' ? 'text-blue-400 border-blue-500/20 bg-blue-500/10' :
+                                      'text-slate-400 border-slate-500/20 bg-slate-500/10'
+                                    }`}
+                                  >
+                                    <option value="pending">Pending</option>
+                                    <option value="contacted">Contacted</option>
+                                    <option value="resolved">Resolved</option>
+                                  </select>
+                                </td>
+                                <td className="p-4 text-right pr-6">
+                                  <button 
+                                    onClick={() => {
+                                      const message = `${lead.firstName} ${lead.lastName}\n${lead.email}\n${lead.phone}\n\nMessage: ${lead.message}`;
+                                      navigator.clipboard.writeText(message);
+                                    }}
+                                    className="text-slate-400 hover:text-white opacity-0 group-hover:opacity-100 transition-all px-3 py-1 rounded hover:bg-white/10 text-[10px] font-black uppercase tracking-widest"
+                                  >
+                                    Copy
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="p-20 text-center">
+                        <h4 className="text-2xl font-black text-white mb-4 tracking-tight">No Leads Yet</h4>
+                        <p className="text-slate-400 text-lg font-medium">When users submit inquiries, they will appear here.</p>
+                      </div>
+                    )}
                  </div>
                </FadeIn>
              )}

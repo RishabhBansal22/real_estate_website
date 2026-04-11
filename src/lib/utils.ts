@@ -16,3 +16,11 @@ export function formatIndianCurrency(price: number): string {
     }).format(price);
   }
 }
+
+export function generateWhatsAppLink(phoneNumber: string, propertyTitle: string): string {
+  // Remove all non-digit characters from phone number
+  const cleanNumber = phoneNumber.replace(/\D/g, '');
+  const message = `Hi, I am interested in this property: ${propertyTitle}`;
+  const encodedMessage = encodeURIComponent(message);
+  return `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+}
