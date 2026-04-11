@@ -12,11 +12,10 @@ export default async function HomePage() {
   // Fetch newest 3 properties for featured section
   const allProperties = await Property.find({}).sort({ createdAt: -1 }).limit(3);
   
-  // Next.js requires plain objects from Mongoose for Server Components passing data to Client Components.
-  const featuredProperties = allProperties.map(doc => {
-    const obj = doc.toJSON();
-    obj.id = obj.id.toString();
-    return obj;
+  // Ensure nested Mongo/BSON values (like nearby subdocument _id) are fully serialized.
+  const featuredProperties = allProperties.map((doc) => {
+    const plain = doc.toObject({ virtuals: true });
+    return JSON.parse(JSON.stringify(plain));
   });
 
   return (
