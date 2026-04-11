@@ -247,14 +247,14 @@ export default function Navbar() {
           <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Quick Contact</div>
           <div className="flex flex-col gap-3">
             <a 
-              href="tel:+919876543210"
+              href="tel:+917073719894"
               className="flex items-center justify-center gap-2 bg-primary-blue text-white py-3 rounded-2xl font-black uppercase tracking-widest text-xs"
             >
               <Phone size={16} />
               Call Us Now
             </a>
             <a 
-              href="https://wa.me/919876543210?text=Hi%20Aura%20Estates%2C%20I%20am%20interested."
+              href="https://wa.me/917073719894?text=Hi%20Aura%20Estates%2C%20I%20am%20interested."
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-emerald-500 text-white py-3 rounded-2xl font-black uppercase tracking-widest text-xs"

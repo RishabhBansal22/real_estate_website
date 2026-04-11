@@ -34,7 +34,7 @@ const FALLBACK_DATA = {
   agent: {
     name: "Michael R.",
     title: "Senior Asset Advisor",
-    phone: "+91 98765 43210",
+    phone: "+91 70737 19894",
     email: "michael@auraestates.com",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200"
   }

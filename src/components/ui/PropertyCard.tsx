@@ -139,7 +139,7 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
 
         {/* WhatsApp Quick Link */}
         <a 
-          href={generateWhatsAppLink("919876543210", property.title)}
+          href={generateWhatsAppLink("917073719894", property.title)}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}

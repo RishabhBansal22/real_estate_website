@@ -6,7 +6,7 @@ import { useState } from "react";
 export default function FloatingWhatsAppButton() {
   const [isOpen, setIsOpen] = useState(false);
   
-  const defaultPhone = "919876543210"; // Admin WhatsApp number
+  const defaultPhone = "917073719894"; // Admin WhatsApp number
   const defaultMessage = "Hi, I'm interested in your property!";
 
   return (
