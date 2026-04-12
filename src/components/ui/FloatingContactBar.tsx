@@ -9,7 +9,7 @@ interface FloatingContactBarProps {
 }
 
 export default function FloatingContactBar({ phone, propertyTitle, city }: FloatingContactBarProps) {
-  const whatsappMessage = encodeURIComponent("Hi Aura Estates, I'm interested in " + propertyTitle + " in " + city + ". Please share more details.");
+  const whatsappMessage = encodeURIComponent("Hi Jain Properties, I'm interested in " + propertyTitle + " in " + city + ". Please share more details.");
   // Pre-compute cleaned phone to avoid regex inside template literal (Turbopack parse bug)
   const cleanPhone = phone.split(' ').join('').split('+').join('');
   const whatsappUrl = "https://wa.me/" + cleanPhone + "?text=" + whatsappMessage;

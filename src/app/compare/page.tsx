@@ -154,7 +154,7 @@ export default function ComparePage() {
                   <td key={p.id} className="p-8 border-l border-white/5 border-b border-white/5">
                     {p.isVerified ? (
                       <div className="flex items-center gap-2 text-emerald-400 font-black text-[10px] uppercase tracking-widest">
-                        <Check size={16} /> Aura Verified
+                        <Check size={16} /> Jain Verified
                       </div>
                     ) : (
                       <div className="text-slate-500 font-black text-[10px] uppercase tracking-widest">Verification Pending</div>

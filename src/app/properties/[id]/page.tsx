@@ -36,7 +36,7 @@ const FALLBACK_DATA = {
     name: "Michael R.",
     title: "Senior Asset Advisor",
     phone: CONTACT_PHONE_DISPLAY || CONTACT_PHONE_TEL,
-    email: "michael@auraestates.com",
+    email: "michael@jainproperties.com",
     image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200"
   }
 };
@@ -449,7 +449,7 @@ export default function PropertyDetailsPage() {
                   <h3 className="font-black text-white text-2xl z-10 tracking-tight">{property.agent.name}</h3>
                   <p className="text-accent-gold text-[10px] font-black uppercase tracking-[0.2em] z-10 mb-8">{property.agent.title}</p>
                   
-                  <button onClick={() => requireAuth(() => alert("Connecting to Aura Concierge..."))} className="w-full bg-primary-blue text-white py-5 px-6 rounded-2xl font-black uppercase tracking-widest text-[11px] transition-all shadow-2xl shadow-primary-blue/20 flex items-center justify-center gap-3 z-10 active:scale-95 mb-3 border border-white/10">
+                  <button onClick={() => requireAuth(() => alert("Connecting to Jain Concierge..."))} className="w-full bg-primary-blue text-white py-5 px-6 rounded-2xl font-black uppercase tracking-widest text-[11px] transition-all shadow-2xl shadow-primary-blue/20 flex items-center justify-center gap-3 z-10 active:scale-95 mb-3 border border-white/10">
                     <ShieldCheck size={20} className="text-accent-gold" /> Secure Consultation
                   </button>
 

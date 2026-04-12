@@ -84,7 +84,7 @@ export default function Navbar() {
               <Home size={22} className="group-hover:scale-110 transition-transform" />
             </div>
             <span className={`text-2xl font-black tracking-tight transition-colors duration-500 ${isScrolled ? 'text-primary-blue' : 'text-white'}`}>
-              Aura<span className="text-accent-gold">Estates</span>
+              Jain<span className="text-accent-gold">Properties</span>
             </span>
           </Link>
 
@@ -255,7 +255,7 @@ export default function Navbar() {
               Call Us Now
             </a>
             <a 
-              href={buildWhatsAppUrl("Hi Aura Estates, I am interested.")}
+              href={buildWhatsAppUrl("Hi Jain Properties, I am interested.")}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-emerald-500 text-white py-3 rounded-2xl font-black uppercase tracking-widest text-xs"
