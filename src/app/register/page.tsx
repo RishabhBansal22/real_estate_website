@@ -91,7 +91,7 @@ export default function RegisterPage() {
                 <Home size={28} />
               </div>
               <span className="font-black text-3xl tracking-tight text-white group-hover:text-accent-gold transition-colors duration-500">
-                Aura<span className="text-accent-gold group-hover:text-white transition-colors duration-500">Estates</span>
+                Jain<span className="text-accent-gold group-hover:text-white transition-colors duration-500">Properties</span>
               </span>
             </Link>
           </div>

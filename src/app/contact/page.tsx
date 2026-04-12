@@ -150,7 +150,7 @@ export default function ContactPage() {
                     <div>
                       <h4 className="font-black text-white text-xs uppercase tracking-widest mb-2">Digital Concierge</h4>
                       <p className="text-sm text-slate-400 font-medium">
-                        <a href={buildWhatsAppUrl("Hi Aura Estates, I need assistance.")} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-2">
+                        <a href={buildWhatsAppUrl("Hi Jain Properties, I need assistance.")} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-2">
                           Chat on WhatsApp <ChevronRight size={14} />
                         </a>
                       </p>

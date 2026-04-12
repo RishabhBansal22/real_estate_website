@@ -16,14 +16,14 @@ export default function AboutPage() {
         <FadeIn>
           <div className="text-center max-w-3xl mx-auto mb-24">
             <h4 className="text-accent-gold font-black uppercase tracking-[0.25em] mb-4 text-[10px] flex items-center justify-center gap-3">
-              <Sparkles size={16} /> The Aura Standard
+              <Sparkles size={16} /> The Jain Standard
             </h4>
             <h1 className="text-5xl md:text-7xl font-black text-white mb-8 tracking-tighter">
               Redefining <br className="hidden md:block"/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-gold via-accent-gold-hover to-accent-gold">Global Luxury</span>
             </h1>
             <p className="text-xl text-slate-400 font-medium leading-relaxed">
-              Founded with a vision to provide unparalleled service and exclusive access to the world&apos;s most sought-after properties, Aura Estates sets the benchmark for exceptional real estate experiences.
+              Founded with a vision to provide unparalleled service and exclusive access to the world&apos;s most sought-after properties, Jain Properties sets the benchmark for exceptional real estate experiences.
             </p>
           </div>
         </FadeIn>
@@ -34,7 +34,7 @@ export default function AboutPage() {
             <div className="relative h-[600px] w-full rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border-[8px] border-white/5">
               <Image 
                 src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1200" 
-                alt="Aura Estates Office" 
+                alt="Jain Properties Office" 
                 fill 
                 className="object-cover hover:scale-105 transition-transform duration-[2000ms] ease-out"
               />
@@ -53,7 +53,7 @@ export default function AboutPage() {
               
               <div className="space-y-6 text-slate-400 font-medium text-lg leading-relaxed">
                 <p>
-                  For over two decades, Aura Estates has been at the forefront of the luxury real estate market. What started as an exclusive boutique agency has grown into a globally recognized brand synonymous with prestige, discretion, and extraordinary results.
+                  For over two decades, Jain Properties has been at the forefront of the luxury real estate market. What started as an exclusive boutique agency has grown into a globally recognized brand synonymous with prestige, discretion, and extraordinary results.
                 </p>
                 <p>
                   We believe that a transaction is not just about buying or selling property; it&apos;s about curating a lifestyle, fulfilling dreams, and building lasting relationships grounded in trust and transparency.

@@ -30,7 +30,7 @@ export default function ContactCTA() {
             Call Now
           </a>
           <a 
-            href={buildWhatsAppUrl("Hi Aura Estates, I need property guidance.")}
+            href={buildWhatsAppUrl("Hi Jain Properties, I need property guidance.")}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 text-white px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-emerald-600 transition-all shadow-lg hover:-translate-y-1"

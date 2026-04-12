@@ -20,8 +20,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Aura Estates | Exclusive Luxury Real Estate",
-  description: "Find your perfect property with Aura Estates. Premium luxury listings, exclusive villas, and high-end commercial spaces.",
+  title: "Jain Properties | Exclusive Luxury Real Estate",
+  description: "Find your perfect property with Jain Properties. Premium luxury listings, exclusive villas, and high-end commercial spaces.",
 };
 
 export default function RootLayout({

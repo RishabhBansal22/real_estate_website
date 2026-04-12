@@ -14,7 +14,7 @@ export default function Footer() {
                 <Home size={28} />
               </div>
               <span className="text-3xl font-black tracking-tighter text-white">
-                Aura<span className="text-accent-gold">Estates</span>
+                Jain<span className="text-accent-gold">Properties</span>
               </span>
             </Link>
             <p className="text-slate-400 text-xs font-bold leading-relaxed uppercase tracking-wider">
@@ -81,7 +81,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-4">
                 <Mail className="text-accent-gold shrink-0" size={18} />
-                <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">concierge@auraestates.com</span>
+                <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">concierge@jainproperties.com</span>
               </li>
             </ul>
           </div>
@@ -90,7 +90,7 @@ export default function Footer() {
 
         <div className="border-t border-white/10 pt-10 mt-10 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-            &copy; {new Date().getFullYear()} Aura Estates • The Pinnacle of Luxury Real Estate
+            &copy; {new Date().getFullYear()} Jain Properties • The Pinnacle of Luxury Real Estate
           </p>
           <div className="flex gap-8">
             <Link href="/privacy" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-colors">Disclosures</Link>

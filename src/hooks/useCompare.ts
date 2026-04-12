@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-const COMPARE_KEY = "aura_compare_list";
+const COMPARE_KEY = "jain_compare_list";
 const MAX_COMPARE = 4;
 
 export function useCompare() {
