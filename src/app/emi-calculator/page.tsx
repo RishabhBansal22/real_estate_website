@@ -1,7 +1,12 @@
+import { Suspense } from "react";
 import EMICalculator from "@/components/ui/EMICalculator";
 
 export default function EMICalculatorPage() {
-  return <EMICalculator />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 py-12" />}>
+      <EMICalculator />
+    </Suspense>
+  );
 }
 
 export const metadata = {

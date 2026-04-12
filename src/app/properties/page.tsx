@@ -145,9 +145,10 @@ function PropertiesContent() {
 
     // 3.6. Highlights (Hot Deal, New)
     if (selectedHighlights.length > 0) {
-      result = result.filter(p => 
-        p.highlights ? selectedHighlights.some(h => p.highlights.includes(h)) : false
-      );
+      result = result.filter((p) => {
+        const highlights = p.highlights;
+        return Array.isArray(highlights) && selectedHighlights.some((h) => highlights.includes(h));
+      });
     }
 
     // 4. Price
@@ -165,7 +166,7 @@ function PropertiesContent() {
       if (sortBy === "Price: Low to High") return a.price - b.price;
       if (sortBy === "Price: High to Low") return b.price - a.price;
       if (sortBy === "Newest Listings") {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
       }
       return 0; // Recommended
     });
