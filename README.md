@@ -1,36 +1,149 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DreamHomes - Real Estate Platform
 
-## Getting Started
+A modern full-stack real estate web app built with Next.js App Router, MongoDB, and NextAuth.
 
-First, run the development server:
+It includes property discovery, AI-powered natural-language search, comparison and wishlist flows, contact lead management, and role-based admin controls for property and enquiry operations.
+
+## Highlights
+
+- Next.js 16 + React 19 + TypeScript app using the App Router architecture.
+- MongoDB + Mongoose models for properties, users, and contacts.
+- Credentials authentication with NextAuth and JWT sessions.
+- AI-style search endpoint that parses plain-language queries into property filters.
+- Property listing with categories, detail pages, featured sections, and map/chart UI components.
+- Wishlist and compare flows for signed-in users.
+- Contact enquiry pipeline with admin-only status updates.
+- Auto-seeding behavior for properties when the database is empty.
+
+## Tech Stack
+
+- Framework: Next.js 16.2.0
+- Language: TypeScript
+- UI: React 19, Tailwind CSS v4, Framer Motion, Lucide Icons
+- Data/DB: MongoDB, Mongoose
+- Auth: NextAuth (Credentials Provider), bcryptjs
+- Visualization & Maps: Recharts, Leaflet, React-Leaflet
+
+## Project Structure
+
+```text
+src/
+	app/
+		api/
+			ai/
+			auth/
+			contacts/
+			properties/
+			search/
+			users/
+		properties/
+		dashboard/
+		wishlist/
+		compare/
+		emi-calculator/
+	components/
+		layout/
+		ui/
+	hooks/
+	lib/
+	models/
+```
+
+## Local Setup
+
+### 1. Prerequisites
+
+- Node.js 20+ recommended
+- npm (or yarn/pnpm/bun)
+- MongoDB Atlas (or compatible MongoDB URI)
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Create environment file
+
+Create a `.env.local` file in the project root:
+
+```bash
+MONGODB_URI=your_mongodb_connection_string
+NEXTAUTH_SECRET=your_random_long_secret
+# Optional fallback used by auth route
+AUTH_SECRET=your_random_long_secret
+
+# Optional: first registered user with this email gets admin role
+ADMIN_EMAIL=admin@example.com
+```
+
+### 4. Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` - Start development server
+- `npm run build` - Create production build
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
 
-## Learn More
+## Authentication and Roles
 
-To learn more about Next.js, take a look at the following resources:
+- Registration: `POST /api/auth/register`
+- Login: NextAuth credentials via `/api/auth/[...nextauth]`
+- Session strategy: JWT
+- Roles:
+	- `user`: default role
+	- `admin`: can create/update/delete properties and manage contacts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API Overview
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Core property APIs
 
-## Deploy on Vercel
+- `GET /api/properties`
+	- Returns all properties sorted by newest.
+	- Seeds initial property data if collection is empty.
+- `POST /api/properties` (admin only)
+	- Creates a property.
+- `PUT /api/properties/:id` (admin only)
+	- Updates a property.
+- `DELETE /api/properties/:id` (admin only)
+	- Deletes a property.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### AI search API
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `POST /api/ai`
+	- Accepts `{ "query": "..." }`
+	- Extracts location, max budget, and type from natural language.
+	- Returns a redirectable URL like `/properties?location=...&maxPrice=...&type=...`.
+
+### Contact APIs
+
+- `GET /api/contacts` (admin only)
+	- Lists all contact enquiries with populated user/property data.
+- `PATCH /api/contacts` (admin only)
+	- Updates enquiry status (`pending`, `contacted`, `resolved`).
+
+## Notes
+
+- The MongoDB connector currently includes a DNS workaround for certain Windows + Atlas SRV timeout scenarios.
+- If your database already has older property documents, the app may reset/reseed property data when key fields are missing.
+
+## Deployment
+
+You can deploy this app on any Node-compatible platform (for example, Vercel).
+
+Before deploying, make sure production environment variables are set:
+
+- `MONGODB_URI`
+- `NEXTAUTH_SECRET` (or `AUTH_SECRET`)
+- `ADMIN_EMAIL` (optional)
+
+## License
+
+No license file is currently defined in this repository.
